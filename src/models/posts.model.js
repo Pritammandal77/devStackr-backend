@@ -4,8 +4,8 @@ const postsSchema = (
     {
         description: {
             type: String,
-            maxlength: 400,
-            required: true
+            maxlength : 400,
+            required : true
         },
         image: {
             type: String, //url from cloudinary
