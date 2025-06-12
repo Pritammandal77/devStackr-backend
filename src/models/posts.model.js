@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
 const postsSchema = (
     {
         description: {
             type: String,
-            maxlength : 400,
-            required : true
+            maxlength: 400,
+            required: true
         },
         image: {
             type: String, //url from cloudinary
@@ -30,5 +31,8 @@ const postsSchema = (
         timestamps: true
     }
 )
+
+postsSchema.plugin(mongooseAggregatePaginate)
+
 
 export const Posts = mongoose.model("Post", postsSchema)
