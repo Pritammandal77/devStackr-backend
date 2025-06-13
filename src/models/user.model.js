@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-const userSchema = (
+const userSchema = new Schema(
     {
         name: {
             type: String,
@@ -31,9 +31,9 @@ const userSchema = (
             required: [true, 'Password is required'], //custom error, if user doesnt inputs their password
             minlength: [8, "Password must be at least 8 characters long"]
         },
-        avatar: {
+        profilePicture: {
             type: String, //getting the url from cloudinary
-            required: true,
+            // required: true,
         },
         coverImage: {
             type: String, //getting the url from cloudinary
@@ -77,7 +77,7 @@ const userSchema = (
     }
 )
 
-//it is a middlware , it encrypts the password just before saving it in db
+//it is a middleware , it encrypts the password just before saving it in db
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next()
 
