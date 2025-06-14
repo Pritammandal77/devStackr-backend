@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, setUserAboutData } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -11,5 +11,21 @@ router.route("/login").post(loginUser)
 
 //using the verifyJWT middleware
 router.route("/logout").post(verifyJWT, logoutUser)
+
+
+router.route("/setAboutUserData").post(
+    verifyJWT,
+    upload.fields([
+        {
+            name: "profilePicture",
+            maxCount: 1 //how many files we are required
+        },
+        {
+            name: "coverImage",
+            maxCount: 1
+        }
+    ]),
+    setUserAboutData
+)
 
 export default router

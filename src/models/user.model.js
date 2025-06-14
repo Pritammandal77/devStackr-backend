@@ -40,15 +40,18 @@ const userSchema = new Schema(
         },
         bio: {
             type: String,
-            maxlength: 250
+            maxlength: 250,
+            default: ""
         },
         githubLink: {
             type: String,
-            trim: true
+            trim: true,
+            default: ""
         },
         linkedinLink: {
             type: String,
-            trim: true
+            trim: true,
+            default: ""
         },
         skills: [String] // e.g. ['React', 'Node.js', 'MongoDB']
         ,
