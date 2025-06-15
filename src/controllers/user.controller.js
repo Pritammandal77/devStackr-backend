@@ -144,61 +144,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 
-// const setUserAboutData = asyncHandler(async (req, res) => {
-//     const { name, userName, bio, githubLink, linkedinLink } = req.body
-
-//     // this gives us the access of profilePicture file , we are extractiong the path of the profilePicture's local server path,
-//     //  not from cloudinary
-//     //multer gives us req.files access
-//     const profilePictureLocalPath = req.files?.profilePicture[0]?.path
-
-//     let profilePicture;
-//     if (profilePictureLocalPath) {
-//         //uploading this local profilePicture file to cloudinary
-//         profilePicture = await uploadOnCloudinary(profilePictureLocalPath)
-//     }
-
-//     let coverImageLocalPath;
-//     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-//         coverImageLocalPath = req.files.coverImage[0].path
-//     }
-
-//     //uploading this local coverImage file to cloudinary
-//     let coverImage;
-//     if (coverImageLocalPath) {
-//         coverImage = await uploadOnCloudinary(coverImageLocalPath);
-//     }
-
-//     // if (!profilePicture) {
-//     //     throw new ApiError(400, "profilePicture file is required")
-//     // }
-
-//     const userAboutData = await User.findByIdAndUpdate(
-//         req.user._id,
-//         {
-//             name: name || "",
-//             userName: userName || "",
-//             profilePicture: profilePicture?.url || "",
-//             coverImage: coverImage?.url || "",
-//             bio: bio || "",
-//             githubLink: githubLink || "",
-//             linkedinLink: linkedinLink || "",
-//             // skills: [skills]
-//         },
-//         {
-//             new: true
-//         }
-//     ).select("-password")
-
-//     return res
-//         .status(200)
-//         .json(
-//             new ApiResponse(200, userAboutData, "User registered successfully")
-//         )
-
-// })
-
-
 const setUserAboutData = asyncHandler(async (req, res) => {
     const { name, userName, bio, githubLink, linkedinLink } = req.body;
 
