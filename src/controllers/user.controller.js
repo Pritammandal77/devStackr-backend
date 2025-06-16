@@ -145,7 +145,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const setUserAboutData = asyncHandler(async (req, res) => {
-    const { name, userName, bio, githubLink, linkedinLink } = req.body;
+    const { name, userName, bio, about, githubLink, linkedinLink } = req.body;
 
     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
@@ -168,6 +168,7 @@ const setUserAboutData = asyncHandler(async (req, res) => {
             profilePicture: profilePicture?.url || "", // Only update if provided
             coverImage: coverImage?.url || "",
             bio: bio || "",
+            about: about || "",
             githubLink: githubLink || "",
             linkedinLink: linkedinLink || "",
         },

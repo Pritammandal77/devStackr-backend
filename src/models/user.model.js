@@ -40,7 +40,12 @@ const userSchema = new Schema(
         },
         bio: {
             type: String,
-            maxlength: 250,
+            maxlength: 120,
+            default: ""
+        },
+        about: {
+            type: String,
+            maxlength: 350,
             default: ""
         },
         githubLink: {
