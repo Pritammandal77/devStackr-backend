@@ -234,10 +234,48 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+
+    const { oldPassword, newPassword } = req.body
+
+    //obvios se baat hain , agar user password change karna chahta hain hain, matlab wo user
+    //already logged in hain
+
+    const user = await User.findById(req.user?._id)
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old password")
+    }
+
+    user.password = newPassword
+
+    await user.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password changed successfully"))
+})
+
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                req.user,
+                "current user fetched successfully"
+            ))
+})
+
 export {
     registerUser,
     loginUser,
     logoutUser,
     setUserAboutData,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser
 }
