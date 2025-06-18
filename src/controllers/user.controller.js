@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
-
+ 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
@@ -156,10 +156,17 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
         profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
     }
 
+    if (!profilePicture.url) {
+        throw new ApiError(400, "Error while uploading profile picture")
+    }
+
     if (coverImageLocalPath) {
         coverImage = await uploadOnCloudinary(coverImageLocalPath);
     }
 
+    if (!coverImage.url) {
+        throw new ApiError(400, "Error while uploading cover Image")
+    }
 
     const updatePayload = {};
 
@@ -280,6 +287,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
                 "current user fetched successfully"
             ))
 })
+
 
 export {
     registerUser,

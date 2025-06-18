@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
-const postsSchema = (
+const postSchema = new Schema(
     {
         description: {
             type: String,
@@ -14,9 +14,9 @@ const postsSchema = (
         video: {
             type: String //url from cloudinary
         },
-        createdBy: {
+        author: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: 'User'
         },
         comments: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -26,13 +26,14 @@ const postsSchema = (
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
         }],
+
     },
     {
         timestamps: true
     }
 )
 
-postsSchema.plugin(mongooseAggregatePaginate)
+postSchema.plugin(mongooseAggregatePaginate)
 
 
-export const Posts = mongoose.model("Post", postsSchema)
+export const Post = mongoose.model("Post", postSchema)
