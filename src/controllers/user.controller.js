@@ -144,8 +144,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 
-const setUserAboutData = asyncHandler(async (req, res) => {
-    const { name, userName, bio, about, githubLink, linkedinLink } = req.body;
+const updateUserAboutData = asyncHandler(async (req, res) => {
+    const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
 
     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
@@ -160,26 +160,37 @@ const setUserAboutData = asyncHandler(async (req, res) => {
         coverImage = await uploadOnCloudinary(coverImageLocalPath);
     }
 
+
+    const updatePayload = {};
+
+    if (name) updatePayload.name = name;
+    if (userName) updatePayload.userName = userName;
+    if (bio) updatePayload.bio = bio;
+    if (about) updatePayload.about = about;
+    if (githubLink) updatePayload.githubLink = githubLink;
+    if (linkedinLink) updatePayload.linkedinLink = linkedinLink;
+    if (skills) {
+        try {
+            const parsedSkills = JSON.parse(skills); // 📌 Postman me string array jaayega, isliye parse
+            if (Array.isArray(parsedSkills)) updatePayload.skills = parsedSkills;
+            console.log("Raw skills data:", skills);
+        } catch (err) {
+            console.error("Skills must be a valid JSON array string");
+        }
+    }
+    if (profilePicture) updatePayload.profilePicture = profilePicture.url;
+    if (coverImage) updatePayload.coverImage = coverImage.url;
+
     const userAboutData = await User.findByIdAndUpdate(
         req.user._id,
-        {
-            name: name || "",
-            userName: userName || "",
-            profilePicture: profilePicture?.url || "", // Only update if provided
-            coverImage: coverImage?.url || "",
-            bio: bio || "",
-            about: about || "",
-            githubLink: githubLink || "",
-            linkedinLink: linkedinLink || "",
-        },
-        { new: true }
+        updatePayload,
+        { new: true }      //it returns the updated data
     ).select("-password");
 
     return res.status(200).json(
         new ApiResponse(200, userAboutData, "User updated successfully")
     );
 });
-
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -274,7 +285,7 @@ export {
     registerUser,
     loginUser,
     logoutUser,
-    setUserAboutData,
+    updateUserAboutData,
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser

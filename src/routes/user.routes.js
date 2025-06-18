@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, refreshAccessToken, registerUser, setUserAboutData } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, refreshAccessToken, registerUser, updateUserAboutData} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -13,7 +13,7 @@ router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJWT, logoutUser)
 
 
-router.route("/setAboutUserData").post(
+router.route("/updateUserAboutData").post(
     verifyJWT,
     upload.fields([
         {
@@ -25,7 +25,7 @@ router.route("/setAboutUserData").post(
             maxCount: 1
         }
     ]),
-    setUserAboutData
+    updateUserAboutData
 )
 
 router.route("/refresh-token").post(refreshAccessToken)
