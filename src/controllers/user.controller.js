@@ -144,29 +144,67 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 
+// const updateUserAboutData = asyncHandler(async (req, res) => {
+//     const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
+
+//     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
+//     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
+//     let profilePicture, coverImage;
+
+//     if (profilePictureLocalPath) {
+//         profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
+//     }
+
+//     if (!profilePicture.url) {
+//         throw new ApiError(400, "Error while uploading profile picture")
+//     }
+
+//     if (coverImageLocalPath) {
+//         coverImage = await uploadOnCloudinary(coverImageLocalPath);
+//     }
+
+//     if (!coverImage.url) {
+//         throw new ApiError(400, "Error while uploading cover Image")
+//     }
+
+//     const updatePayload = {};
+
+//     if (name) updatePayload.name = name;
+//     if (userName) updatePayload.userName = userName;
+//     if (bio) updatePayload.bio = bio;
+//     if (about) updatePayload.about = about;
+//     if (githubLink) updatePayload.githubLink = githubLink;
+//     if (linkedinLink) updatePayload.linkedinLink = linkedinLink;
+//     if (skills) {
+//         try {
+//             const parsedSkills = JSON.parse(skills); // 📌 Postman me string array jaayega, isliye parse
+//             if (Array.isArray(parsedSkills)) updatePayload.skills = parsedSkills;
+//             console.log("Raw skills data:", skills);
+//         } catch (err) {
+//             console.error("Skills must be a valid JSON array string");
+//         }
+//     }
+//     if (profilePicture) updatePayload.profilePicture = profilePicture.url;
+//     if (coverImage) updatePayload.coverImage = coverImage.url;
+
+//     const userAboutData = await User.findByIdAndUpdate(
+//         req.user._id,
+//         updatePayload,
+//         { new: true }      //it returns the updated data
+//     ).select("-password");
+
+//     return res.status(200).json(
+//         new ApiResponse(200, userAboutData, "User updated successfully")
+//     );
+// });
+
+
 const updateUserAboutData = asyncHandler(async (req, res) => {
     const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
 
     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
-
-    let profilePicture, coverImage;
-
-    if (profilePictureLocalPath) {
-        profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
-    }
-
-    if (!profilePicture.url) {
-        throw new ApiError(400, "Error while uploading profile picture")
-    }
-
-    if (coverImageLocalPath) {
-        coverImage = await uploadOnCloudinary(coverImageLocalPath);
-    }
-
-    if (!coverImage.url) {
-        throw new ApiError(400, "Error while uploading cover Image")
-    }
 
     const updatePayload = {};
 
@@ -176,28 +214,49 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
     if (about) updatePayload.about = about;
     if (githubLink) updatePayload.githubLink = githubLink;
     if (linkedinLink) updatePayload.linkedinLink = linkedinLink;
+
     if (skills) {
         try {
-            const parsedSkills = JSON.parse(skills); // 📌 Postman me string array jaayega, isliye parse
-            if (Array.isArray(parsedSkills)) updatePayload.skills = parsedSkills;
-            console.log("Raw skills data:", skills);
+            const parsedSkills = JSON.parse(skills); // Expecting JSON array string
+            if (Array.isArray(parsedSkills)) {
+                updatePayload.skills = parsedSkills;
+                console.log("Parsed skills:", parsedSkills);
+            }
         } catch (err) {
-            console.error("Skills must be a valid JSON array string");
+            console.error("Invalid JSON in 'skills' field");
         }
     }
-    if (profilePicture) updatePayload.profilePicture = profilePicture.url;
-    if (coverImage) updatePayload.coverImage = coverImage.url;
 
+    // Handle profile picture upload
+    if (profilePictureLocalPath) {
+        const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
+        if (!profilePicture?.url) {
+            throw new ApiError(400, "Error while uploading profile picture");
+        }
+        updatePayload.profilePicture = profilePicture.url;
+    }
+
+    // Handle cover image upload
+    if (coverImageLocalPath) {
+        const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+        if (!coverImage?.url) {
+            throw new ApiError(400, "Error while uploading cover Image");
+        }
+        updatePayload.coverImage = coverImage.url;
+    }
+
+    // Update user in DB
     const userAboutData = await User.findByIdAndUpdate(
         req.user._id,
         updatePayload,
-        { new: true }      //it returns the updated data
+        { new: true } // Return updated data
     ).select("-password");
 
     return res.status(200).json(
         new ApiResponse(200, userAboutData, "User updated successfully")
     );
 });
+
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

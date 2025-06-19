@@ -89,7 +89,7 @@ const createPost = asyncHandler(async (req, res) => {
         videoUrl = await uploadOnCloudinary(videoLocalPath);
         if (!videoUrl?.url) throw new ApiError(400, "Error while uploading video");
     }
-
+ 
     // ✅ Create post
     const newPost = await Post.create({
         description,
