@@ -118,6 +118,7 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
     const user = await User.findById(userId)
         .populate({
             path: "posts",
+            options: { sort: { createdAt: -1 } },  //it will sort it in newest posts first to older olders
             populate: {
                 path: "author", // nested populate if needed
                 select: "name userName profilePicture"

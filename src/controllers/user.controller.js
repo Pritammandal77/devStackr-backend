@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
- 
+
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
@@ -21,50 +21,97 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 
-const registerUser = asyncHandler(async (req, res) => {
+//this is hitesh sir's code , it is fully working , the only problem is that ,
+//  it does'nt saves refresh & access token ,means even if user registers but he does
+//  not login automatically , he must fill login form again to get logs in after creating a account 
 
-    const { name, userName, email, password } = req.body
+// const registerUser = asyncHandler(async (req, res) => {
+
+//     const { name, userName, email, password } = req.body
+
+//     if ([name, userName, email, password].some((field) => field?.trim() === "")) {
+//         throw new ApiError(400, "All fields are required")
+//     }
+
+//     //UserSchema se findOne kar rhe hain, mtln jo bhe pehla match hoga wo mil jaayega
+//     const existedUser = await User.findOne({
+//         $or: [{ userName }, { email }]
+//     })
+
+//     if (existedUser) {
+//         throw new ApiError(409, "User with email or userName already exist")
+//     }
+
+//     const user = await User.create({
+//         name: name,
+//         userName: userName,
+//         email: email,
+//         password: password
+//     })
+
+//     const createdUser = await User.findById(user._id).select(
+//         "-password -refreshToken"
+//     )
+
+//     if (!createdUser) {
+//         throw new ApiError(500, "Something went wrong while registering user")
+//     }
+
+//     return res
+//         .status(201)
+//         .json(
+//             new ApiResponse(200, createdUser, "User registered successfully")
+//         )
+// })
+
+
+const registerUser = asyncHandler(async (req, res) => {
+    const { name, userName, email, password } = req.body;
 
     if ([name, userName, email, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required");
     }
 
-    //UserSchema se findOne kar rhe hain, mtln jo bhe pehla match hoga wo mil jaayega
     const existedUser = await User.findOne({
         $or: [{ userName }, { email }]
-    })
+    });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email or userName already exist")
+        throw new ApiError(409, "User with email or userName already exist");
     }
-
-    // const profilePictureLocalPath = req.files?.profilePicture[0]?.path
-    // const coverImageLocalPath = req.files?.coverImage[0]?.path
-
-    // const profilePicture = await uploadOnCloudinary(profilePictureLocalPath)
-    // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     const user = await User.create({
-        name: name,
-        userName: userName,
-        email: email,
-        password: password
-    })
+        name,
+        userName,
+        email,
+        password
+    });
 
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    )
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
-    if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while registering user")
-    }
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
 
     return res
         .status(201)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
-            new ApiResponse(200, createdUser, "User registered successfully")
-        )
-})
+            new ApiResponse(
+                200,
+                {
+                    user: createdUser,
+                    accessToken,
+                    refreshToken
+                },
+                "User registered & logged in successfully"
+            )
+        );
+});
 
 const loginUser = asyncHandler(async (req, res) => {
 
@@ -235,7 +282,7 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
         }
         updatePayload.profilePicture = profilePicture.url;
     }
- 
+
     // Handle cover image upload
     if (coverImageLocalPath) {
         const coverImage = await uploadOnCloudinary(coverImageLocalPath);
