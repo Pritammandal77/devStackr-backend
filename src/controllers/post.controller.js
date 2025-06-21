@@ -89,7 +89,7 @@ const createPost = asyncHandler(async (req, res) => {
         videoUrl = await uploadOnCloudinary(videoLocalPath);
         if (!videoUrl?.url) throw new ApiError(400, "Error while uploading video");
     }
- 
+
     // ✅ Create post
     const newPost = await Post.create({
         description,
@@ -133,9 +133,28 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllPosts = asyncHandler(async (req, res) => {
+    const posts = await Post.find({})
+        .sort({ createdAt: -1 }) // Latest posts first
+        .populate({
+            path: "author",
+            select: "name userName profilePicture"
+        });
+
+    if (!posts || posts.length === 0) {
+        throw new ApiError(404, "No posts found");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, posts, "All posts fetched successfully")
+        );
+});
 
 
 export {
     createPost,
-    getCurrentUserPosts
+    getCurrentUserPosts,
+    getAllPosts
 };

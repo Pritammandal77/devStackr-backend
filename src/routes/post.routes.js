@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { createPost, getCurrentUserPosts } from "../controllers/post.controller.js";
+import { createPost, getAllPosts, getCurrentUserPosts } from "../controllers/post.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
@@ -24,5 +24,7 @@ router.route("/getcurrentuserposts").get(
     verifyJWT,
     getCurrentUserPosts
 )
+
+router.route("/allposts").get(getAllPosts)
 
 export default router

@@ -235,7 +235,7 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
         }
         updatePayload.profilePicture = profilePicture.url;
     }
-
+ 
     // Handle cover image upload
     if (coverImageLocalPath) {
         const coverImage = await uploadOnCloudinary(coverImageLocalPath);
