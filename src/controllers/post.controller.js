@@ -1,66 +1,3 @@
-// import { Post } from "../models/post.model";
-// import { User } from "../models/user.model";
-// import { ApiError } from "../utils/ApiError";
-// import { ApiResponse } from "../utils/ApiResponse";
-// import { asyncHandler } from "../utils/asyncHandler";
-// import { uploadOnCloudinary } from "../utils/cloudinary";
-
-// const createPost = asyncHandler(async (req, res) => {
-//     const { description } = req.body
-//     const userId = req.user._id;
-
-//     let postdescription;
-
-//     if (!description) {
-//         postdescription = ""
-//     } else {
-//         postdescription = description
-//     }
-
-//     const imageLocalPath = req.files?.image?.[0]?.path;
-//     const videoLocalPath = req.files?.video?.[0]?.path;
-
-//     let imageUrl, videoUrl;
-
-//     if (imageLocalPath) {
-//         imageUrl = await uploadOnCloudinary(imageLocalPath);
-//     }
-
-//     if (!imageUrl.url) {
-//         throw new ApiError(400, "Error while uploading image")
-//     }
-
-//     if (videoLocalPath) {
-//         videoUrl = await uploadOnCloudinary(videoLocalPath);
-//     }
-
-//     if (!videoUrl.url) {
-//         throw new ApiError(400, "Error while uploading video")
-//     }
-
-//     const newPost = await Post.create({
-//         description: postdescription,
-//         image: imageUrl,
-//         video: videoUrl,
-//         author: userId
-//     });
-
-//     await User.findByIdAndUpdate(
-//         userId,
-//         {
-//             $push: { posts: newPost._id }
-//         }
-//     )
-
-//     return res
-//         .status(201).
-//         json(
-//             new ApiResponse(201, newPost, "Post created and linked to user successfully.")
-//         );
-// })
-
-// export { createPost }
-
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -154,8 +91,42 @@ const getAllPosts = asyncHandler(async (req, res) => {
 });
 
 
+const likesCount = asyncHandler(async (req, res) => {
+    const { postId } = req.body
+    const userId = req.user._id
+
+    const post = await Post.findById(postId)
+
+    if (!post) {
+        throw new ApiError(404, "Post not found");
+    }
+
+    const alreadyLiked = post.likes.includes(userId);
+
+    if (alreadyLiked) {
+        post.likes.pull(userId); // Unlike
+    } else {
+        post.likes.push(userId); // Like
+    }
+
+    await post.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {
+                postId: post._id,
+                likesCount: post.likes.length,
+                likes : post.likes,
+                likedByUser: !alreadyLiked
+            }, alreadyLiked ? "Post unliked" : "Post liked")
+        );
+
+})
+
 export {
     createPost,
     getCurrentUserPosts,
-    getAllPosts
+    getAllPosts,
+    likesCount
 };
