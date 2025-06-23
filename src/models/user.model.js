@@ -40,7 +40,7 @@ const userSchema = new Schema(
         },
         bio: {
             type: String,
-            maxlength: 120,
+            maxlength: 100,
             default: ""
         },
         about: {

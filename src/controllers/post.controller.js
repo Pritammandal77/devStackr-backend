@@ -71,6 +71,7 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
     );
 });
 
+
 const getAllPosts = asyncHandler(async (req, res) => {
     const posts = await Post.find({})
         .sort({ createdAt: -1 }) // Latest posts first

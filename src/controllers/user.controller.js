@@ -191,61 +191,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 
-// const updateUserAboutData = asyncHandler(async (req, res) => {
-//     const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
-
-//     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
-//     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
-
-//     let profilePicture, coverImage;
-
-//     if (profilePictureLocalPath) {
-//         profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
-//     }
-
-//     if (!profilePicture.url) {
-//         throw new ApiError(400, "Error while uploading profile picture")
-//     }
-
-//     if (coverImageLocalPath) {
-//         coverImage = await uploadOnCloudinary(coverImageLocalPath);
-//     }
-
-//     if (!coverImage.url) {
-//         throw new ApiError(400, "Error while uploading cover Image")
-//     }
-
-//     const updatePayload = {};
-
-//     if (name) updatePayload.name = name;
-//     if (userName) updatePayload.userName = userName;
-//     if (bio) updatePayload.bio = bio;
-//     if (about) updatePayload.about = about;
-//     if (githubLink) updatePayload.githubLink = githubLink;
-//     if (linkedinLink) updatePayload.linkedinLink = linkedinLink;
-//     if (skills) {
-//         try {
-//             const parsedSkills = JSON.parse(skills); // 📌 Postman me string array jaayega, isliye parse
-//             if (Array.isArray(parsedSkills)) updatePayload.skills = parsedSkills;
-//             console.log("Raw skills data:", skills);
-//         } catch (err) {
-//             console.error("Skills must be a valid JSON array string");
-//         }
-//     }
-//     if (profilePicture) updatePayload.profilePicture = profilePicture.url;
-//     if (coverImage) updatePayload.coverImage = coverImage.url;
-
-//     const userAboutData = await User.findByIdAndUpdate(
-//         req.user._id,
-//         updatePayload,
-//         { new: true }      //it returns the updated data
-//     ).select("-password");
-
-//     return res.status(200).json(
-//         new ApiResponse(200, userAboutData, "User updated successfully")
-//     );
-// });
-
 
 const updateUserAboutData = asyncHandler(async (req, res) => {
     const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
@@ -394,6 +339,22 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             ))
 })
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    const allUsers = await User.find({}).select("name userName profilePicture bio _id")
+
+    //allUsers always return an array , thats why I use .length
+    if (allUsers.length === 0) {
+        throw new ApiError(404, "No users found");
+    }
+
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, allUsers, "all users fetched successfully")
+        )
+})
+
 
 export {
     registerUser,
@@ -402,5 +363,6 @@ export {
     updateUserAboutData,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentUser
+    getCurrentUser,
+    getAllUsers
 }
