@@ -347,7 +347,6 @@ const getAllUsers = asyncHandler(async (req, res) => {
         throw new ApiError(404, "No users found");
     }
 
-
     return res
         .status(200)
         .json(
@@ -355,6 +354,22 @@ const getAllUsers = asyncHandler(async (req, res) => {
         )
 })
 
+
+const getUserById = asyncHandler(async (req, res) => {
+    const { id } = req.params
+
+    const userProfile = await User.findById(id).select("-password -refreshToken");
+
+    if (!userProfile) {
+        throw new ApiError("no user find with this id")
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, userProfile, "user find successfully")
+        )
+})
 
 export {
     registerUser,
@@ -364,5 +379,6 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
-    getAllUsers
+    getAllUsers,
+    getUserById
 }
