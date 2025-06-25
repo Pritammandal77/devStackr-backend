@@ -118,16 +118,57 @@ const likesCount = asyncHandler(async (req, res) => {
             new ApiResponse(200, {
                 postId: post._id,
                 likesCount: post.likes.length,
-                likes : post.likes,
+                likes: post.likes,
                 likedByUser: !alreadyLiked
             }, alreadyLiked ? "Post unliked" : "Post liked")
         );
 
 })
 
+
+// const getUserPostsById = asyncHandler(async (req, res) => {
+//     let { postIds } = req.query
+
+
+//     if (!Array.isArray(postIds)) {
+//         postIds = [postIds];
+//     }
+
+//     const posts = await Post.find({ _id: { $in: postIds } })
+
+//     if (posts.length === 0) {
+//         throw new ApiError("No posts found")
+//     }
+
+//     return res
+//         .status(200)
+//         .json(
+//             new ApiResponse(200, posts, "posts fetched successfully")
+//         )
+// })
+
+
+const getUserPostsById = asyncHandler(async (req, res) => {
+    const { postIds } = req.body;
+
+    if (!Array.isArray(postIds)) {
+        throw new ApiError(400, "postIds must be an array");
+    }
+
+    const posts = await Post.find({ _id: { $in: postIds } }).populate("author");
+
+    if (posts.length === 0) {
+        throw new ApiError(404, "No posts found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, posts, "Posts fetched successfully"));
+});
+
+
 export {
     createPost,
     getCurrentUserPosts,
     getAllPosts,
-    likesCount
+    likesCount,
+    getUserPostsById
 };

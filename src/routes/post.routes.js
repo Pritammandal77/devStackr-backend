@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { createPost, getAllPosts, getCurrentUserPosts, likesCount } from "../controllers/post.controller.js";
+import { createPost, getAllPosts, getCurrentUserPosts, getUserPostsById, likesCount } from "../controllers/post.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
@@ -28,5 +28,7 @@ router.route("/getcurrentuserposts").get(
 router.route("/allposts").get(getAllPosts)
 
 router.route("/likes").put(verifyJWT, likesCount)
+
+router.route("/userpostsbyid").post(getUserPostsById);
 
 export default router
