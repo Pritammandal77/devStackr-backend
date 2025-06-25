@@ -15,19 +15,19 @@ const createPost = asyncHandler(async (req, res) => {
     let imageUrl = { url: "" };
     let videoUrl = { url: "" };
 
-    // ✅ Upload image if available
+    // Upload image if available
     if (imageLocalPath) {
         imageUrl = await uploadOnCloudinary(imageLocalPath);
         if (!imageUrl?.url) throw new ApiError(400, "Error while uploading image");
     }
 
-    // ✅ Upload video if available
+    // Upload video if available
     if (videoLocalPath) {
         videoUrl = await uploadOnCloudinary(videoLocalPath);
         if (!videoUrl?.url) throw new ApiError(400, "Error while uploading video");
     }
 
-    // ✅ Create post
+    // Create post
     const newPost = await Post.create({
         description,
         image: imageUrl.url,
@@ -35,7 +35,7 @@ const createPost = asyncHandler(async (req, res) => {
         author: userId
     });
 
-    // ✅ Add post to user's posts array
+    // Add post to user's posts array
     await User.findByIdAndUpdate(
         userId,
         { $push: { posts: newPost._id } },
@@ -126,28 +126,6 @@ const likesCount = asyncHandler(async (req, res) => {
 })
 
 
-// const getUserPostsById = asyncHandler(async (req, res) => {
-//     let { postIds } = req.query
-
-
-//     if (!Array.isArray(postIds)) {
-//         postIds = [postIds];
-//     }
-
-//     const posts = await Post.find({ _id: { $in: postIds } })
-
-//     if (posts.length === 0) {
-//         throw new ApiError("No posts found")
-//     }
-
-//     return res
-//         .status(200)
-//         .json(
-//             new ApiResponse(200, posts, "posts fetched successfully")
-//         )
-// })
-
-
 const getUserPostsById = asyncHandler(async (req, res) => {
     const { postIds } = req.body;
 
@@ -155,7 +133,7 @@ const getUserPostsById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "postIds must be an array");
     }
 
-    const posts = await Post.find({ _id: { $in: postIds } }).populate("author");
+    const posts = await Post.find({ _id: { $in: postIds } }).populate("author").sort({ createdAt: -1 });
 
     if (posts.length === 0) {
         throw new ApiError(404, "No posts found");
