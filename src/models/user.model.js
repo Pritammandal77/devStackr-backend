@@ -45,7 +45,7 @@ const userSchema = new Schema(
         },
         about: {
             type: String,
-            maxlength: 350,
+            maxlength: 1000,
             default: ""
         },
         githubLink: {

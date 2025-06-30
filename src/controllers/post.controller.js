@@ -49,6 +49,7 @@ const createPost = asyncHandler(async (req, res) => {
         );
 });
 
+
 const getCurrentUserPosts = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 

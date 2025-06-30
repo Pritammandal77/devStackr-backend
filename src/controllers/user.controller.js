@@ -127,7 +127,7 @@ const loginUser = asyncHandler(async (req, res) => {
     })
 
     if (!user) {
-        throw new ApiError(400, "user with this email or does not exist")
+        throw new ApiError(400, "user with this email or password does not exist")
     }
 
     //we are using the isPasswordCorrect method from the user.model.js
