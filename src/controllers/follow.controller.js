@@ -58,5 +58,6 @@ const unfollowUser = asyncHandler(async (req, res) => {
 })
 
 export {
-    followUser
+    followUser,
+    unfollowUser
 }
