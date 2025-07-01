@@ -8,8 +8,8 @@ import jwt from "jsonwebtoken"
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateAccessToken()
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken(); 
 
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
@@ -93,7 +93,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
     };
 
     return res
@@ -144,7 +146,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
     }
 
     return res
@@ -179,7 +183,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
     }
 
     return res
@@ -253,7 +259,7 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     //user ka refresh token ham cookies se access kar skte hain
-    const incomingRefreshToken = req.cookies.resfreshToken || req.body.refreshToken
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
@@ -278,7 +284,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "None",
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
         }
 
         const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)

@@ -36,5 +36,4 @@ router.route("/allusers").get(getAllUsers)
 
 router.route("/:id").get(getUserById)
 
-
 export default router
