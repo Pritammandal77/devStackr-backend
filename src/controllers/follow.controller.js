@@ -63,7 +63,21 @@ const unfollowUser = asyncHandler(async (req, res) => {
         );
 })
 
+ 
+const getFollowersList = asyncHandler(async (req, res) => {
+    const { id } = req.params
+    // const userId = req.params.userId;
+    const followers = await Follow.find({ following: id }).populate("follower");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, followers, "followers fetched successfully")
+        )
+})
+
 export {
     followUser,
-    unfollowUser
+    unfollowUser,
+    getFollowersList
 }
