@@ -1,9 +1,11 @@
-import { Follow } from "../models/follow.model";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Follow } from "../models/follow.model.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const followUser = asyncHandler(async (req, res) => {
     const { userToFollow } = req.body
+
+    //we are getting this req.user._id because of the verifyJWT middleware
     const currentUser = req.user._id
 
     if (currentUser.toString() === userToFollow) {
@@ -16,7 +18,11 @@ const followUser = asyncHandler(async (req, res) => {
     });
 
     if (alreadyFollowed) {
-        new ApiResponse(200, {}, "already following")
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, {}, "Already following")
+            );
     }
 
     await Follow.create(
@@ -26,7 +32,7 @@ const followUser = asyncHandler(async (req, res) => {
         }
     )
 
-    return new res
+    return res
         .status(200)
         .json(
             new ApiResponse(200, {}, "Followed successfully")

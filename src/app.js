@@ -24,7 +24,7 @@ app.use(express.json({
 // allows nested objects in that data, and limits the size of the request body to 16 kilobytes to 
 // prevent excessively large requests.
 app.use(express.urlencoded({
-    extended: true, 
+    extended: true,
     limit: "16kb"
 }))
 
@@ -41,10 +41,13 @@ app.use(cookieParser())
 //import routes
 import userRouter from './routes/user.routes.js'
 import postRouter from './routes/post.routes.js'
+import followRouter from "./routes/follow.routes.js"
 
 //routes declaration
 app.use("/api/v1/users", userRouter)
 
 app.use("/api/v1/posts", postRouter)
+
+app.use("/api/v1/follows", followRouter)
 
 export { app }
