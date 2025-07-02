@@ -67,7 +67,10 @@ const unfollowUser = asyncHandler(async (req, res) => {
 const getFollowersList = asyncHandler(async (req, res) => {
     const { id } = req.params
     // const userId = req.params.userId;
-    const followers = await Follow.find({ following: id }).populate("follower");
+    const followers = await Follow.find({ following: id }).populate({
+        path: "follower",
+        select: "-password -refreshToken"
+    })
 
     return res
         .status(200)
@@ -79,7 +82,10 @@ const getFollowersList = asyncHandler(async (req, res) => {
 const getFollowingList = asyncHandler(async (req, res) => {
     const { id } = req.params
 
-    const following = await Follow.find({ follower: id }).populate("following");
+    const following = await Follow.find({ follower: id }).populate({
+        path: "following",
+        select: "-password -refreshToken"
+    })
 
     return res
         .status(200)
