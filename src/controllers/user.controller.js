@@ -9,7 +9,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
         const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken(); 
+        const refreshToken = user.generateRefreshToken();
 
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
@@ -379,6 +379,33 @@ const getUserById = asyncHandler(async (req, res) => {
         )
 })
 
+
+const searchUser = asyncHandler(async (req, res) => {
+    const { userToSearch } = req.query;
+
+    if (!userToSearch) {
+        throw new ApiError("name or username is required")
+    }
+
+    const searchedUser = await User.find({
+        $or: [
+            {
+                name: { $regex: userToSearch, $options: "i" }
+            },
+            {
+                userName: { $regex: userToSearch, $options: "i" }
+            }
+        ]
+    }).select("-password -refreshToken");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, searchedUser, "user searched successfully")
+        )
+
+})
+
 export {
     registerUser,
     loginUser,
@@ -388,5 +415,6 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     getAllUsers,
-    getUserById
+    getUserById,
+    searchUser
 }

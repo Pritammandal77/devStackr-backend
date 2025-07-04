@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, getCurrentUser, getUserById, loginUser, logoutUser, refreshAccessToken, registerUser, updateUserAboutData } from "../controllers/user.controller.js";
+import { getAllUsers, getCurrentUser, getUserById, loginUser, logoutUser, refreshAccessToken, registerUser, searchUser, updateUserAboutData } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -34,6 +34,9 @@ router.route("/getCurrentUser").get(verifyJWT, getCurrentUser)
 
 router.route("/allusers").get(getAllUsers)
 
+router.route("/searchuser").get(searchUser)
+
 router.route("/:id").get(getUserById)
+
 
 export default router
