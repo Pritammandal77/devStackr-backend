@@ -38,5 +38,4 @@ router.route("/searchuser").get(searchUser)
 
 router.route("/:id").get(getUserById)
 
-
 export default router

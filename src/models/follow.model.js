@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-
+ 
 const followSchema = new Schema(
     {
         follower: {
