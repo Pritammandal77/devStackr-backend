@@ -4,7 +4,7 @@ const commentSchema = new Schema(
     {
         comment: {
             type: String,
-            maxlength: 400,
+            maxlength: 800,
             required: true
         },
         postId: {
