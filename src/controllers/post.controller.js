@@ -139,15 +139,32 @@ const getUserPostsById = asyncHandler(async (req, res) => {
     if (posts.length === 0) {
         throw new ApiError(404, "No posts found");
     }
-      
+
     return res.status(200).json(new ApiResponse(200, posts, "Posts fetched successfully"));
 });
 
+
+const deleteAPost = asyncHandler(async (req, res) => {
+    const { postId } = req.params
+
+    if (!postId) {
+        throw new ApiError("postId is required to delete a post")
+    }
+
+    await Post.findByIdAndDelete(postId)
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {} , "Post deleted successfully")
+        )
+})
 
 export {
     createPost,
     getCurrentUserPosts,
     getAllPosts,
     likesCount,
-    getUserPostsById
+    getUserPostsById,
+    deleteAPost
 };
