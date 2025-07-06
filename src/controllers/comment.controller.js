@@ -38,7 +38,7 @@ const getCurrentPostComment = asyncHandler(async (req, res) => {
     const comments = await Comment.find({ postId }).populate({
         path: "user",
         select: "_id name userName profilePicture"
-    })
+    }).sort({ createdAt: -1 })
 
     return res
         .status(200)
