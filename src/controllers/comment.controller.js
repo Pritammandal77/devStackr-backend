@@ -47,7 +47,25 @@ const getCurrentPostComment = asyncHandler(async (req, res) => {
         );
 })
 
+const deleteComment = asyncHandler(async (req, res) => {
+    const { id } = req.params
+
+    if (!id) {
+        throw new ApiError("id not found")
+    }
+
+    await Comment.findByIdAndDelete(id)
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "comment deleted successfully")
+        )
+
+})
+
 export {
     createComment,
-    getCurrentPostComment
+    getCurrentPostComment,
+    deleteComment
 }
