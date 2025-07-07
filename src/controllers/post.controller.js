@@ -156,7 +156,32 @@ const deleteAPost = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, {} , "Post deleted successfully")
+            new ApiResponse(200, {}, "Post deleted successfully")
+        )
+})
+
+const editPost = asyncHandler(async (req, res) => {
+    const { postId } = req.params
+    const { description } = req.body
+
+    if (!postId) {
+        throw new ApiError("postId is required to edit a post")
+    }
+
+    if (!description) {
+        throw new ApiError("could not found description to change")
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+        postId,
+        { description },
+        { new: true } // Return updated data
+    )
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedPost, "post updated successfully")
         )
 })
 
@@ -166,5 +191,6 @@ export {
     getAllPosts,
     likesCount,
     getUserPostsById,
-    deleteAPost
+    deleteAPost,
+    editPost
 };
