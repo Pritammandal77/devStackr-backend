@@ -189,7 +189,7 @@ const editPost = asyncHandler(async (req, res) => {
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
-        postId,
+        {_id : postId},
         { description },
         { new: true } // Return updated data
     )
@@ -197,7 +197,7 @@ const editPost = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, updatedPost, "post updated successfully")
+            new ApiResponse(200, updatedPost , "post updated successfully")
         )
 })
 

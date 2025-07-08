@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { createPost, deleteAPost, getAllPosts, getAPostById, getCurrentUserPosts, getUserPostsById, likesCount } from "../controllers/post.controller.js";
+import { createPost, deleteAPost, editPost, getAllPosts, getAPostById, getCurrentUserPosts, getUserPostsById, likesCount } from "../controllers/post.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router()
@@ -34,5 +34,7 @@ router.route("/userpostsbyid").post(getUserPostsById);
 router.route("/deletepost/:postId").delete(deleteAPost)
 
 router.route("/getpostbyid/:postId").get(getAPostById)
+
+router.route("/editpost/:postId").post(editPost)
 
 export default router
