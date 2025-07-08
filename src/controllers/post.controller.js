@@ -160,6 +160,22 @@ const deleteAPost = asyncHandler(async (req, res) => {
         )
 })
 
+const getAPostById = asyncHandler(async (req, res) => {
+    const { postId } = req.params
+
+    if (!postId) {
+        throw new ApiError("PostId required to fetch a post")
+    }
+
+    const post = await Post.find({_id :postId})
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, post, "post fetched successfully")
+        )
+})
+
 const editPost = asyncHandler(async (req, res) => {
     const { postId } = req.params
     const { description } = req.body
@@ -192,5 +208,6 @@ export {
     likesCount,
     getUserPostsById,
     deleteAPost,
+    getAPostById,
     editPost
 };
