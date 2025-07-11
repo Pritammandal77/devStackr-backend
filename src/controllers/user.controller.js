@@ -199,7 +199,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const updateUserAboutData = asyncHandler(async (req, res) => {
-    const { name, userName, bio, about, githubLink, linkedinLink, skills } = req.body;
+    const { name, userName, bio, about, githubLink, linkedinLink, portfolioLink, twitterLink, skills } = req.body;
 
     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
@@ -212,6 +212,8 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
     if (about) updatePayload.about = about;
     if (githubLink) updatePayload.githubLink = githubLink;
     if (linkedinLink) updatePayload.linkedinLink = linkedinLink;
+    if (portfolioLink) updatePayload.portfolioLink = portfolioLink;
+    if (twitterLink) updatePayload.twitterLink = twitterLink;
 
     if (skills) {
         try {

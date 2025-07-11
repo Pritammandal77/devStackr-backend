@@ -58,6 +58,16 @@ const userSchema = new Schema(
             trim: true,
             default: ""
         },
+        portfolioLink: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+        twitterLink: {
+            type: String,
+            trim: true,
+            default: ""
+        },
         skills: [String] // e.g. ['React', 'Node.js', 'MongoDB']
         ,
         followers: [{
