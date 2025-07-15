@@ -21,50 +21,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 
-//this is hitesh sir's code , it is fully working , the only problem is that ,
-//  it does'nt saves refresh & access token ,means even if user registers but he does
-//  not login automatically , he must fill login form again to get logs in after creating a account 
-
-// const registerUser = asyncHandler(async (req, res) => {
-
-//     const { name, userName, email, password } = req.body
-
-//     if ([name, userName, email, password].some((field) => field?.trim() === "")) {
-//         throw new ApiError(400, "All fields are required")
-//     }
-
-//     //UserSchema se findOne kar rhe hain, mtln jo bhe pehla match hoga wo mil jaayega
-//     const existedUser = await User.findOne({
-//         $or: [{ userName }, { email }]
-//     })
-
-//     if (existedUser) {
-//         throw new ApiError(409, "User with email or userName already exist")
-//     }
-
-//     const user = await User.create({
-//         name: name,
-//         userName: userName,
-//         email: email,
-//         password: password
-//     })
-
-//     const createdUser = await User.findById(user._id).select(
-//         "-password -refreshToken"
-//     )
-
-//     if (!createdUser) {
-//         throw new ApiError(500, "Something went wrong while registering user")
-//     }
-
-//     return res
-//         .status(201)
-//         .json(
-//             new ApiResponse(200, createdUser, "User registered successfully")
-//         )
-// })
-
-
 const registerUser = asyncHandler(async (req, res) => {
     const { name, userName, email, password } = req.body;
 
@@ -288,7 +244,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
+            maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in ms
         }
 
         const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
@@ -420,3 +376,58 @@ export {
     getUserById,
     searchUser
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//this is hitesh sir's code , it is fully working , the only problem is that ,
+//  it does'nt saves refresh & access token ,means even if user registers but he does
+//  not login automatically , he must fill login form again to get logs in after creating a account
+
+// const registerUser = asyncHandler(async (req, res) => {
+
+//     const { name, userName, email, password } = req.body
+
+//     if ([name, userName, email, password].some((field) => field?.trim() === "")) {
+//         throw new ApiError(400, "All fields are required")
+//     }
+
+//     //UserSchema se findOne kar rhe hain, mtln jo bhe pehla match hoga wo mil jaayega
+//     const existedUser = await User.findOne({
+//         $or: [{ userName }, { email }]
+//     })
+
+//     if (existedUser) {
+//         throw new ApiError(409, "User with email or userName already exist")
+//     }
+
+//     const user = await User.create({
+//         name: name,
+//         userName: userName,
+//         email: email,
+//         password: password
+//     })
+
+//     const createdUser = await User.findById(user._id).select(
+//         "-password -refreshToken"
+//     )
+
+//     if (!createdUser) {
+//         throw new ApiError(500, "Something went wrong while registering user")
+//     }
+
+//     return res
+//         .status(201)
+//         .json(
+//             new ApiResponse(200, createdUser, "User registered successfully")
+//         )
+// })
+
