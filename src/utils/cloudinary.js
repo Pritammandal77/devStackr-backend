@@ -22,7 +22,8 @@ const uploadOnCloudinary = async (localFilePath) => {
         //file has been uploaded successfully
         // console.log("file is uploaded on Cloudinary", response.url)
         fs.unlinkSync(localFilePath)
-        return response.secure_url;   // Return the HTTPS version of the uploaded file URL to avoid mixed content issues on frontend
+        return response //old code
+        // return response.secure_url;   // Return the HTTPS version of the uploaded file URL to avoid mixed content issues on frontend
 
     } catch (error) {
         //agar hamari file uplaod nahi hoti hain , to usse local server se bhe toh hatana pdega na...
