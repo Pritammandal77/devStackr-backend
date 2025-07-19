@@ -79,16 +79,16 @@ const fetchChats = asyncHandler(async (req, res) => {
         )
 })
 
-const createGroupChat = asyncHandler(async(req, res) => {
+const createGroupChat = asyncHandler(async (req, res) => {
     const userIds = JSON.parse(req.body.users)
     const groupName = req.body.groupName
     const currUser = req.user._id
 
-    if(!userIds || !groupName){
+    if (!userIds || !groupName) {
         throw new ApiError(400, "Please send the users & group name")
     }
 
-    if(userIds.length < 2){
+    if (userIds.length < 2) {
         throw new ApiError(400, "please add 2 or more users to create a group chat")
     }
 
@@ -96,24 +96,54 @@ const createGroupChat = asyncHandler(async(req, res) => {
 
     try {
         const groupChat = await Chat.create({
-            chatName : groupName,
-            isGroupChat : true,
-            users : userIds,
-            groupAdmin : currUser
+            chatName: groupName,
+            isGroupChat: true,
+            users: userIds,
+            groupAdmin: currUser
         })
 
-        const fullGroupChat = await Chat.findOne({_id : groupChat._id})
-        .populate("users", "-password -refreshToken")
-        .populate("groupAdmin", "-password -refreshToken")
+        const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+            .populate("users", "-password -refreshToken")
+            .populate("groupAdmin", "-password -refreshToken")
 
         res
+            .status(200)
+            .json(
+                new ApiResponse(200, fullGroupChat, "groupchat created successfully")
+            )
+    } catch (error) {
+        throw new ApiError(400, error?.message || "Failed to create group chat");
+    }
+})
+
+const renameGroup = asyncHandler(async (req, res) => {
+    const { chatId, newChatName } = req.body;
+
+    if (!chatId || !newChatName) {
+        throw new ApiError(400, "Chat ID and new name are required");
+    }
+
+
+    const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            chatName: newChatName
+        },
+        {
+            new: true
+        }
+    ).populate("users", "-password -refreshToken")
+        .populate("groupAdmin", "-password -refreshToken")
+
+    if (!updatedChat) {
+        throw new ApiError(400, "Chat not found")
+    }
+
+    res
         .status(200)
         .json(
-            new ApiResponse(200, fullGroupChat, "groupchat created successfully")
+            new ApiResponse(200, updatedChat, "chat name updated successfully")
         )
-    } catch (error) {
-      throw new ApiError(400, error?.message || "Failed to create group chat");
-    }
 })
 
 export {
