@@ -60,17 +60,64 @@ const createOrFetchChat = asyncHandler(async (req, res) => {
     }
 })
 
+
 const fetchChats = asyncHandler(async (req, res) => {
     const currUser = req.user._id
+
+    const chats = await Chat.find({
+        users: { $elemMatch: { $eq: currUser } }
+    })
+        .populate("users", "-password -refreshToken")
+        .populate("latestMessage")
+        .populate("groupAdmin", "-password -refreshToken")
+        .sort({ updatedAt: -1 })
 
     res
         .status(200)
         .json(
-            new ApiResponse(200, {}, "hello")
+            new ApiResponse(200, chats, "hello")
         )
+})
+
+const createGroupChat = asyncHandler(async(req, res) => {
+    const userIds = JSON.parse(req.body.users)
+    const groupName = req.body.groupName
+    const currUser = req.user._id
+
+    if(!userIds || !groupName){
+        throw new ApiError(400, "Please send the users & group name")
+    }
+
+    if(userIds.length < 2){
+        throw new ApiError(400, "please add 2 or more users to create a group chat")
+    }
+
+    userIds.push(currUser) //adding the curr user in the array , to create groupChat
+
+    try {
+        const groupChat = await Chat.create({
+            chatName : groupName,
+            isGroupChat : true,
+            users : userIds,
+            groupAdmin : currUser
+        })
+
+        const fullGroupChat = await Chat.findOne({_id : groupChat._id})
+        .populate("users", "-password -refreshToken")
+        .populate("groupAdmin", "-password -refreshToken")
+
+        res
+        .status(200)
+        .json(
+            new ApiResponse(200, fullGroupChat, "groupchat created successfully")
+        )
+    } catch (error) {
+      throw new ApiError(400, error?.message || "Failed to create group chat");
+    }
 })
 
 export {
     createOrFetchChat,
-    fetchChats
+    fetchChats,
+    createGroupChat
 }
