@@ -116,13 +116,13 @@ const createGroupChat = asyncHandler(async (req, res) => {
     }
 })
 
+
 const renameGroup = asyncHandler(async (req, res) => {
     const { chatId, newChatName } = req.body;
 
     if (!chatId || !newChatName) {
         throw new ApiError(400, "Chat ID and new name are required");
     }
-
 
     const updatedChat = await Chat.findByIdAndUpdate(
         chatId,
@@ -146,8 +146,67 @@ const renameGroup = asyncHandler(async (req, res) => {
         )
 })
 
+
+const addToGroup = asyncHandler(async (req, res) => {
+    const { chatId, userId } = req.body
+
+    if (!chatId || !userId) {
+        throw new ApiError(400, "Chat ID and user are required to add a member");
+    }
+
+    const addNewMember = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            $push: { users: userId }
+        },
+        { new: true }
+    ).populate("users", "-password -refreshToken")
+        .populate("groupAdmin", "-password -refreshToken")
+
+    if (!addNewMember) {
+        throw new ApiError(400, "Chat not found")
+    }
+
+    res
+        .status(200)
+        .json(
+            new ApiResponse(200, addNewMember, "new member added successfully")
+        )
+})
+
+
+const removeFromGroup = asyncHandler(async (req, res) => {
+    const { chatId, userId } = req.body
+
+    if (!chatId || !userId) {
+        throw new ApiError(400, "Chat ID and user are required to remove a member");
+    }
+
+    const removeMember = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            $pull: { users: userId }
+        },
+        { new: true }
+    ).populate("users", "-password -refreshToken")
+        .populate("groupAdmin", "-password -refreshToken")
+
+    if (!removeMember) {
+        throw new ApiError(400, "Chat not found")
+    }
+
+    res
+        .status(200)
+        .json(
+            new ApiResponse(200, removeMember, "member removed successfully")
+        )
+})
+
 export {
     createOrFetchChat,
     fetchChats,
-    createGroupChat
+    createGroupChat,
+    renameGroup,
+    addToGroup,
+    removeFromGroup
 }
