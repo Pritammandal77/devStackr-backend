@@ -44,6 +44,7 @@ import postRouter from './routes/post.routes.js'
 import followRouter from "./routes/follow.routes.js"
 import commentRouter from "./routes/comment.routes.js"
 import chatRouter from "./routes/chat.routes.js"
+import messageRouter from "./routes/message.routes.js"
 
 //routes declaration
 app.use("/api/v1/users", userRouter)
@@ -55,6 +56,8 @@ app.use("/api/v1/follows", followRouter)
 app.use("/api/v1/comments", commentRouter)
 
 app.use("/api/v1/chat", chatRouter)
+
+app.use("/api/v1/message", messageRouter)
 
 
 export { app }
