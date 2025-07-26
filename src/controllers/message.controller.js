@@ -42,6 +42,29 @@ const sendMessage = asyncHandler(async (req, res) => {
         )
 })
 
+const fetchMessages = asyncHandler(async (req, res) => {
+    const { chatId } = req.params
+
+    if (!chatId) {
+        throw new ApiError(400, "could'nt get the chat ID")
+    }
+
+    const messages = await Message.find({ chat: chatId }).populate(
+        "sender", "_id name profilePicture"
+    ).populate("chat")
+
+    if (!messages) {
+        throw new ApiError(500, "Error while fetching the messages")
+    }
+
+    res
+        .status(200)
+        .json(
+            new ApiResponse(200, messages, "messages fetched successfully")
+        )
+})
+
 export {
-    sendMessage
+    sendMessage,
+    fetchMessages
 }
