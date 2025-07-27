@@ -1,6 +1,8 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors"
+import http from "http";
+import { Server } from "socket.io";
 
 const app = express()
 
@@ -60,4 +62,117 @@ app.use("/api/v1/chat", chatRouter)
 app.use("/api/v1/message", messageRouter)
 
 
-export { app }
+//code for socket.io
+const server = http.createServer(app);   // Create HTTP server and attach socket.io
+
+const io = new Server(server, {
+    pingTimeout: 60000,
+    cors: {
+        origin: "http://localhost:5173",
+        credentials: true
+    }
+});
+
+//Socket.io connection
+io.on("connection", (socket) => {
+    console.log("A user connected to socket.io");
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected");
+    });
+
+    socket.on('setup', (userData) => {
+
+        if (!userData || !userData._id) {
+            console.log("Invalid userData received:", userData);
+            return;
+        }
+
+        socket.join(userData._id)
+        console.log("userId", userData._id)
+        socket.emit('connected')
+    })
+
+    // it takes the roomId
+    socket.on('join chat', (room) => {
+        socket.join(room)
+        console.log('User joined Room', room)
+    })
+
+    //to send new msg
+    socket.on('new message', (newMessageReceived) => {
+        let chat = newMessageReceived.chat;
+
+        if (!chat.users) return console.log('chat.users not defined')
+
+        chat.users.forEach(user => {
+            if (user._id == newMessageReceived.sender._id) return;
+
+            socket.in(user._id).emit("message received", newMessageReceived)
+        })
+    })
+});
+
+
+export { app, server }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//old code jo mene khudse likha hain..
+// //code for socket.io
+// const server = http.createServer(app);   // Create HTTP server and attach socket.io
+
+// const io = new Server(server, {
+//     pingTimeout: 60000,
+//     cors: {
+//         origin: "http://localhost:5173",
+//         credentials: true
+//     }
+// });
+
+// //Socket.io connection
+// io.on("connection", (socket) => {
+//     console.log("A user connected to socket.io");
+
+//     socket.on("disconnect", () => {
+//         console.log("A user disconnected");
+//     });
+
+//     socket.on('setup', (userData) => {
+//         socket.join(userData._id)
+//         console.log(userData._id)
+//         socket.emit('connected')
+//     })
+
+//     // it takes the roomId
+//     socket.on('join chat', (room) => {
+//         socket.join(room)
+//         console.log('User joined Room', room)
+//     })
+
+//     //to send new msg
+//     socket.on('new message', (newMessageReceived) => {
+//         let chat = newMessageReceived.chat;
+
+//         if(!chat.users) return console.log('chat.users not defined')
+
+//         chat.users.forEach(user => {
+//             if(user._id == newMessageReceived.sender._id) return;
+
+//             socket.in(user._id).emit("message received", newMessageReceived)
+//         })
+//     })
+// });

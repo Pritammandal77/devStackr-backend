@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "start": "node --experimental-json-modules src/index.js"      
+    "start": "node --experimental-json-modules src/index.js"
   },
   "keywords": [
     "javascript",
@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
     "mongoose-aggregate-paginate-v2": "^1.1.4",
-    "multer": "^2.0.1"
+    "multer": "^2.0.1",
+    "socket.io": "^4.8.1"
   }
 }
