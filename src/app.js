@@ -11,7 +11,11 @@ const app = express()
 // to request resources from another domain.
 //In backend development, we use CORS to allow or block which frontend websites can access our server or API.
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    // origin: process.env.CORS_ORIGIN,
+    origin: [
+        "http://localhost:5173",
+        "https://devstackr.netlify.app"
+    ],
     credentials: true
 }))
 
@@ -68,7 +72,11 @@ const server = http.createServer(app);   // Create HTTP server and attach socket
 const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
-        origin: process.env.CORS_ORIGIN,
+        // origin: process.env.CORS_ORIGIN,
+        origin: [
+            "http://localhost:5173",
+            "https://devstackr.netlify.app"
+        ],
         credentials: true
     }
 });
@@ -98,6 +106,9 @@ io.on("connection", (socket) => {
         socket.join(room)
         console.log('User joined Room', room)
     })
+
+    socket.on('typing', (room) => socket.in(room).emit("typing"));
+    socket.on('stop typing', (room) => socket.in(room).emit("stop typing"));
 
     //to send new msg
     socket.on('new message', (newMessageReceived) => {
