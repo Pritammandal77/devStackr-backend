@@ -4,6 +4,10 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
+import ms from "ms"
+
+
+const refreshTokenMaxAge = ms(process.env.REFRESH_TOKEN_EXPIRY || "14d");
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -47,17 +51,25 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = {
+
+    const accessTokenOptions = {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
+        maxAge: 2 * 60 * 60 * 1000 // 2 hours in ms
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: refreshTokenMaxAge
     };
 
     return res
         .status(201)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .json(
             new ApiResponse(
                 200,
@@ -100,17 +112,31 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-    const options = {
+    // const options = {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: "None",
+    //     maxAge: 24 * 60 * 60 * 1000 // 1 day
+    // }
+
+    const accessTokenOptions = {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    }
+        maxAge: 2 * 60 * 60 * 1000 // 2 hours in ms
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: refreshTokenMaxAge
+    };
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
         .json(
             new ApiResponse(
                 200,
@@ -137,17 +163,24 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     )
 
-    const options = {
+    const accessTokenOptions = {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    }
+        maxAge: 2 * 60 * 60 * 1000 // 2 hours in ms
+    };
+
+    const refreshTokenOptions = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: refreshTokenMaxAge
+    };
 
     return res
         .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
+        .clearCookie("accessToken", accessTokenOptions)
+        .clearCookie("refreshToken", refreshTokenOptions)
         .json(new ApiResponse(200, {}, "User logged Out successfully"))
 
 })
@@ -240,19 +273,27 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "refresh token is expired or used")
         }
 
-        const options = {
+
+        const accessTokenOptions = {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in ms
-        }
+            maxAge: 2 * 60 * 60 * 1000 // 2 hours in ms
+        };
+
+        const refreshTokenOptions = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            maxAge: refreshTokenMaxAge
+        };
 
         const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
 
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", newRefreshToken, options)
+            .cookie("accessToken", accessToken, accessTokenOptions)
+            .cookie("refreshToken", newRefreshToken, refreshTokenOptions)
             .json(
                 new ApiResponse(
                     200,
