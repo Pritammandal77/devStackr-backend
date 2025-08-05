@@ -6,7 +6,6 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
 import ms from "ms"
 
-
 const refreshTokenMaxAge = ms(process.env.REFRESH_TOKEN_EXPIRY || "14d");
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -186,7 +185,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 
-
 const updateUserAboutData = asyncHandler(async (req, res) => {
     const { name, userName, bio, about, githubLink, linkedinLink, portfolioLink, twitterLink, skills } = req.body;
 
@@ -247,23 +245,27 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
 });
 
 
-
 const refreshAccessToken = asyncHandler(async (req, res) => {
     //user ka refresh token ham cookies se access kar skte hain
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
-
+    
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
     }
-
+    
     try {
         //verify refreshToken
         const decodedToken = jwt.verify(
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-
+        
         const user = await User.findById(decodedToken?._id)
+        
+        // console.log("decoded token", decodedToken)
+        // console.log("token", incomingRefreshToken)
+        // console.log("user", user.refreshToken)
+        // console.log("equal?", incomingRefreshToken === user.refreshToken)
 
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
@@ -272,7 +274,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         if (incomingRefreshToken !== user?.refreshToken) {
             throw new ApiError(401, "refresh token is expired or used")
         }
-
 
         const accessTokenOptions = {
             httpOnly: true,
