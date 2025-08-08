@@ -184,7 +184,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 })
 
-
 const updateUserAboutData = asyncHandler(async (req, res) => {
     const { name, userName, bio, about, githubLink, linkedinLink, portfolioLink, twitterLink, skills } = req.body;
 
@@ -248,31 +247,34 @@ const updateUserAboutData = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
     //user ka refresh token ham cookies se access kar skte hain
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
-    
+
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
     }
-    
+
     try {
         //verify refreshToken
         const decodedToken = jwt.verify(
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-        
+
         const user = await User.findById(decodedToken?._id)
-        
-        // console.log("decoded token", decodedToken)
-        // console.log("token", incomingRefreshToken)
-        // console.log("user", user.refreshToken)
-        // console.log("equal?", incomingRefreshToken === user.refreshToken)
+
+        console.log("decoded token", decodedToken)
+        console.log("cookies wala token", incomingRefreshToken)
+        console.log("db wala token", user.refreshToken)
+        console.log("equal?", incomingRefreshToken === user.refreshToken)
 
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
 
-        if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiError(401, "refresh token is expired or used")
+        // if (incomingRefreshToken !== user?.refreshToken) {
+        //     throw new ApiError(401, "refresh token is expired or used")
+        // }
+        if (incomingRefreshToken.trim() !== user.refreshToken.trim()) {
+            throw new ApiError(401, "refresh token is expired or used");
         }
 
         const accessTokenOptions = {
@@ -289,18 +291,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             maxAge: refreshTokenMaxAge
         };
 
-        const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
+        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
         return res
             .status(200)
             .cookie("accessToken", accessToken, accessTokenOptions)
-            .cookie("refreshToken", newRefreshToken, refreshTokenOptions)
+            .cookie("refreshToken", refreshToken, refreshTokenOptions)
             .json(
                 new ApiResponse(
                     200,
                     {
                         accessToken,
-                        refreshToken: newRefreshToken
+                        refreshToken: refreshToken
                     },
                     "Access token refreshed"
                 )
