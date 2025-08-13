@@ -12,7 +12,6 @@ router.route("/login").post(loginUser)
 //using the verifyJWT middleware
 router.route("/logout").post(verifyJWT, logoutUser)
 
-
 router.route("/updateUserAboutData").post(
     verifyJWT,
     upload.fields([

@@ -174,7 +174,6 @@ const addToGroup = asyncHandler(async (req, res) => {
         )
 })
 
-
 const removeFromGroup = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body
 
