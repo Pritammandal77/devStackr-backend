@@ -10,7 +10,7 @@ router.route("/createpost").post(
     upload.fields([
         {
             name: "image",
-            maxCount: 1 //how many files we are required
+            maxCount: 1 // how many files we are required
         },
         {
             name: "video",

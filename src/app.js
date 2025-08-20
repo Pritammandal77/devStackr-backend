@@ -6,15 +6,14 @@ import { Server } from "socket.io";
 
 const app = express()
 
-//CORS (Cross-Origin Resource Sharing)
-//CORS is a security feature in web browsers that controls whether a web page from one domain is allowed 
+// CORS (Cross-Origin Resource Sharing)
+// CORS is a security feature in web browsers that controls whether a web page from one domain is allowed 
 // to request resources from another domain.
-//In backend development, we use CORS to allow or block which frontend websites can access our server or API.
+// In backend development, we use CORS to allow or block which frontend websites can access our server or API.
 app.use(cors({
-    // origin: process.env.CORS_ORIGIN,
     origin: [
         "http://localhost:5173",
-        "https://devstackr.netlify.app"
+         process.env.CORS_ORIGIN
     ],
     credentials: true
 }))
