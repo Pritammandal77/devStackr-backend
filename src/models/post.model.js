@@ -5,7 +5,7 @@ const postSchema = new Schema(
     {
         description: {
             type: String,
-            maxlength: 800,
+            maxlength: 2000,
             required: true
         },
         image: {

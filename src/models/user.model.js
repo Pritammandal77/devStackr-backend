@@ -90,7 +90,7 @@ const userSchema = new Schema(
         timestamps: true
     }
 )
-
+ 
 //it is a middleware , it encrypts the password just before saving it in db
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next()

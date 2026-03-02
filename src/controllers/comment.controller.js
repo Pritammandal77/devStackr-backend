@@ -6,7 +6,7 @@ import { Comment } from "../models/comment.model.js";
 const createComment = asyncHandler(async (req, res) => {
     const { postId, commentText } = req.body
     const user = req.user._id
-
+ 
     if (!user) {
         throw new ApiError("no user found")
     }

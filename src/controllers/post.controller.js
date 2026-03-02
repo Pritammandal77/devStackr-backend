@@ -4,9 +4,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-
+ 
 const createPost = asyncHandler(async (req, res) => {
-    const { description = "" } = req.body;  // ✅ default empty
+    const { description = "" } = req.body;  // default empty
     const userId = req.user._id;
 
     const imageLocalPath = req.files?.image?.[0]?.path;
@@ -26,7 +26,7 @@ const createPost = asyncHandler(async (req, res) => {
         videoUrl = await uploadOnCloudinary(videoLocalPath);
         if (!videoUrl?.url) throw new ApiError(400, "Error while uploading video");
     }
-
+  
     // Create post
     const newPost = await Post.create({
         description,
