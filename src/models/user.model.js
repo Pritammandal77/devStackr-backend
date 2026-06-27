@@ -17,7 +17,7 @@ const userSchema = new Schema(
             lowercase: true,
             trim: true,
             index: true     //whenever we use any field as an searcheble element , then we set its index : true , but ye jada use karne se performance issues aate hain
-        },
+        }, 
         email: {
             type: String,
             required: true,

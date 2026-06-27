@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-
+ 
     const accessTokenOptions = {
         httpOnly: true,
         secure: true,
@@ -87,7 +87,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
     if (!(email || password)) {
-        throw new ApiError(400, "username and password is required")
+        throw new ApiError(400, "email and password is required")
     }
 
     //User.findOne return the first document matches either the email or password (bcoz , we use $or operator)
@@ -308,7 +308,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401, error?.message || "Invalid refresh token")
     }
 })
-
+ 
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
 
